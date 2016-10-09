@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html ng-app="app">
+<head >
+    <title>News Feeds</title>
+	<meta charset="utf-8" />
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+    <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <script src="scripts/angular.min.js"></script>
+    <script src="scripts/angular-route.min.js"></script>
+
+    <script src="app/app.js"></script>
+    <script src="app/feed-list/feed-list-controller.js"></script>
+    <script src="app/feed-list/feed-list-service.js"></script>
+</head>
+<body>
+    <div class="well">
+        <h1>News Feeds</h1>
+    </div>
+    <div class="container" ng-controller="feedListController">
+        <div class="row" ng-repeat="feed in feeds track by $index">
+            <div class="col-md-10" ng-hide="feed.id == showDetailsId">
+                {{feed.text}}<span>&nbsp;<a href="" ng-click="showDetails(feed.id)">Read more</a></span>
+            </div>
+            <div class="col-md-10" ng-show="feed.id == showDetailsId" ng-click="hideDetails()">{{feedFullText}}</div>
+        </div>
+        <nav>
+            <ul class="pager">
+                <li class="previous" ng-class="{disabled:!hasprevious}"><a href=""><span>&larr;</span> Newer</a></li>
+                <li class="next" ng-class="{disabled:!hasnext}"><a href=""><span>&rarr;</span> Older</a></li>
+            </ul>
+        </nav>
+        <form name="feedsform" ng-submit="submitNewFeed(feedsForm.$value)" novalidate>
+            <div class="form-group">
+                <label for="newsFeedText">Post News</label>
+                <textarea class="form-control" id="newsFeedText" rows="3" ng-model="newFeed" required ng-minlength="10"></textarea>
+                <label class="form-control-feedback">Please enter at least 10 charaters.</label>
+                
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
