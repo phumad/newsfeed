@@ -10,33 +10,41 @@
     <script src="scripts/angular.min.js"></script>
     <script src="scripts/angular-route.min.js"></script>
 
+    <!-- Use Grunt task to concatinate these files automatically into dist folder and in a well known file(s)
+        No need to remember to include - also may be to minify -->
     <script src="app/app.js"></script>
+    <script src="app/appSettings.js"></script>
     <script src="app/feed-list/feed-list-controller.js"></script>
     <script src="app/feed-list/feed-list-service.js"></script>
 </head>
-<body>
+<body ng-controller="feedListController">
     <div class="well">
         <h1>News Feeds</h1>
     </div>
-    <div class="container" ng-controller="feedListController">
+    <div class="container" >
+        <div ng-hide="!hasStatus">
+            <strong>{{status}}</strong>
+        </div>
         <div class="row" ng-repeat="feed in feeds track by $index">
-            <div class="col-md-10" ng-hide="feed.id == showDetailsId">
-                {{feed.text}}<span>&nbsp;<a href="" ng-click="showDetails(feed.id)">Read more</a></span>
+            <div class="col-md-10" ng-hide="feed.id == showDetailsId">{{feed.text}}<span ng-show="feed.hasPartialText">&nbsp;<a href="" ng-click="showDetails(feed.id)">Read more</a></span>
             </div>
             <div class="col-md-10" ng-show="feed.id == showDetailsId" ng-click="hideDetails()">{{feedFullText}}</div>
         </div>
         <nav>
             <ul class="pager">
-                <li class="previous" ng-class="{disabled:!hasprevious}"><a href=""><span>&larr;</span> Newer</a></li>
-                <li class="next" ng-class="{disabled:!hasnext}"><a href=""><span>&rarr;</span> Older</a></li>
+                <li class="previous" ng-class="{disabled:!hasPrevious()}"><a href="" ng-click="prevPage()"><span>&larr;</span> Newer</a></li>
+                <li>Show<select ng-model="selectedPageSize" ng-options="item for item in pageSizeOptions" ng-change="pageSizeChange()"></select></li>
+                <li class="next" ng-class="{disabled:!hasNext()}"><a href="" ng-click="nextPage()"><span>&rarr;</span> Older</a></li>
             </ul>
         </nav>
-        <form name="feedsform" ng-submit="submitNewFeed(feedsForm.$value)" novalidate>
+        <form name="feedsForm" ng-submit="feedsForm.$valid && submitNewFeed()" novalidate>
             <div class="form-group">
                 <label for="newsFeedText">Post News</label>
-                <textarea class="form-control" id="newsFeedText" rows="3" ng-model="newFeed" required ng-minlength="10"></textarea>
-                <label class="form-control-feedback">Please enter at least 10 charaters.</label>
-                
+                <textarea class="form-control" id="newsFeedText" name="newsFeedText" rows="3" ng-model="newFeed" required ng-minlength="10"></textarea>
+                <div ng-show="feedsForm.$submitted">
+                    <div ng-show="feedsForm.newsFeedText.$error.required">Please enter news feed.</div>
+                    <div ng-show="feedsForm.newsFeedText.$error.minlength">Please enter at least 10 characters.</div>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>

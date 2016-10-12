@@ -5,10 +5,10 @@
         .module('app')
         .factory('feedListService', feedListService);
 
-    feedListService.$inject = ['$http'];
+    feedListService.$inject = ['$http', 'appSettings', '$q'];
 
-    function feedListService($http) {
-        var urlBase = 'http://localhost:61664/api/feeds';
+    function feedListService($http, appSettings, $q) {
+        var urlBase = appSettings.apiUrl; //'http://localhost:61664/api/feeds';
 
         var service = {
             getFeed: getFeed,
@@ -18,9 +18,16 @@
 
         return service;
 
-        function getFeeds(pageNumber) {
-            var params = { 'page': pageNumber, 'pageSize': 10, 'bodySize': 100 };
-            return $http.get(urlBase, { params: params });
+        function getFeeds(pageNumber, pageSize) {
+            var params = { 'page': pageNumber, 'pageSize': pageSize, 'bodySize': 100 };
+            return $http.get(urlBase, { params: params }).then(
+                function (response) {
+                    return response.data;
+                },
+                function (error) {
+                    return $q.reject(error);
+                }
+                );
         }
 
         function addFeed(feed) {
@@ -28,7 +35,14 @@
         }
 
         function getFeed(id) {
-            return $http.get('http://localhost:61664/api/feeds/'+id);
+            return $http.get(urlBase + id).then(
+                function (response) {
+                    return response.data;
+                },
+                function (error) {
+                    return $q.reject(error);
+                }
+                );
         }
     }
 })();

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContextFactory.cs" />
     <Compile Include="Feed.cs" />
     <Compile Include="FeedContext.cs" />
     <Compile Include="FeedRepository.cs" />

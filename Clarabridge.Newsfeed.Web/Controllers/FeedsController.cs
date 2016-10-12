@@ -13,9 +13,9 @@ namespace Clarabridge.Newsfeed.Web.Controllers
     {
         public IFeedRepository feedRepository;
 
-        public FeedsController()
+        public FeedsController(IFeedRepository feedRepository)
         {
-            this.feedRepository = new FeedRepository();
+            this.feedRepository = feedRepository;
         }
 
         [HttpGet]
@@ -24,30 +24,36 @@ namespace Clarabridge.Newsfeed.Web.Controllers
         {
             page = page - 1;
 
-            return feedRepository.GetFeeds(pageSize, page).Select(item => new FeedItem()
+            var response = feedRepository.GetFeeds(pageSize, page).Select(item => new FeedItem()
             {
                 Id = item.Id,
                 DateCreated = item.DateCreated,
                 Text = item.Body.Substring(0, Math.Min(item.Body.Length, bodySize)),
-                InFullText = item.Body.Length > bodySize
+                HasPartialText = item.Body.Length > bodySize
             });
+
+            return response;           
         }
 
         [HttpGet]
-        [Route("api/feeds/{id}")]
-        public Feed Get(int id)
+        [Route("api/feeds/{id}", Name = "GetFeedById")]
+        public HttpResponseMessage Get(int id)
         {
-            return feedRepository.GetFeed(id);
+            var f = feedRepository.GetFeed(id);
+            if (f == null) return Request.CreateErrorResponse(HttpStatusCode.NotFound, string.Format("Feed with id {0} not found", id));
+            return Request.CreateResponse(f.Body);
         }
 
         [HttpPost]
         [Route("api/feeds")]
         public HttpResponseMessage Post([FromBody]string feed)
         {
-            if (string.IsNullOrWhiteSpace(feed)) return Request.CreateResponse(HttpStatusCode.BadGateway);
+            if (string.IsNullOrWhiteSpace(feed)) return Request.CreateResponse(HttpStatusCode.BadRequest);
 
-            feedRepository.AddFeed(new Feed() { Body = feed });
-            return this.Request.CreateResponse(HttpStatusCode.Created);
+            var f = feedRepository.AddFeed(new Feed() { Body = feed });
+            var response = Request.CreateResponse(HttpStatusCode.Created);
+            response.Headers.Location = new Uri(Url.Link("GetFeedById", new { id = f.Id }));
+            return response;
         }
     }
 }

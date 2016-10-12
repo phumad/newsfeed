@@ -15,9 +15,16 @@ namespace Clarabridge.Newsfeed.Data
 
     public class FeedRepository : IFeedRepository
     {
+        public IContextFactory contextFactory;
+
+        public FeedRepository(IContextFactory contextFactory)
+        {
+            this.contextFactory = contextFactory;
+        }
+
         public Feed AddFeed(Feed feed)
         {
-            using (var context = new FeedContext())
+            using (var context = contextFactory.GetContext())
             {
                 feed.DateCreated = DateTime.Now;
                 feed = context.Feeds.Add(feed);
@@ -28,7 +35,7 @@ namespace Clarabridge.Newsfeed.Data
 
         public IEnumerable<Feed> GetFeeds(int pageSize, int page)
         {
-            using (var context = new FeedContext())
+            using (var context = contextFactory.GetContext())
             {
                 return context.Feeds.OrderByDescending(f => f.DateCreated).Skip(pageSize * page).Take(pageSize).ToList();
             }
@@ -36,7 +43,7 @@ namespace Clarabridge.Newsfeed.Data
 
         public Feed GetFeed(int Id)
         {
-            using (var context = new FeedContext())
+            using (var context = contextFactory.GetContext())
             {
                 return context.Feeds.FirstOrDefault(feed => feed.Id == Id);
             }
