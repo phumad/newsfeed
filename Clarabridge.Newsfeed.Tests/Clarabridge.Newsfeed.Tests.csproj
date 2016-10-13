@@ -68,6 +68,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FeedRepositoryTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -75,10 +76,6 @@
     <ProjectReference Include="..\Clarabridge.Newsfeed.Data\Clarabridge.Newsfeed.Data.csproj">
       <Project>{6bbffd7f-1140-4f69-bafa-ae1a2538053d}</Project>
       <Name>Clarabridge.Newsfeed.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Clarabridge.Newsfeed.Web\Clarabridge.Newsfeed.Web.csproj">
-      <Project>{ABACC46B-B259-46D9-AE4D-1DAEC86747E8}</Project>
-      <Name>Clarabridge.Newsfeed.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

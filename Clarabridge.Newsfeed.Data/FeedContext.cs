@@ -15,7 +15,7 @@ namespace Clarabridge.Newsfeed.Data
 
         }
 
-        public DbSet<Feed> Feeds { get; set; }
+        public virtual DbSet<Feed> Feeds { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
